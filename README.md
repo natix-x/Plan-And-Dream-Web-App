@@ -1,14 +1,16 @@
-# Salary-Prediction-Web-App
+# Plan&Dream Web App
 
 ## Table of contents: 
 * [General info](#general-info)
-* [Data preparation and analysis](#data-preparation-and-analysis)
-* [Data modelling](#data-modelling)
+* [Requirements](#requirements)
+* [Setup](#setup)
+* [Status](#status)
 
-### Genral info
-The aim of this project is to create a web application using Flask for deploying a machine learning model that predicts probable salary based on inserted features.
-It focuses mainly on developing skills connected with microframeworks such as Flask.
+### General info
+The aim of this project is to create a web application using Flask that allows users to create their "to do lists" and share them with the others.
 
-The dataset used in this project is obtained from [Kaggle](https://www.kaggle.com/datasets/rkiattisak/salaly-prediction-for-beginer/data).
-### Data preparation and analysis
-### Data modelling
+This project focuses mainly on developing skills connected with Flask and good practices while creating project structure. 
+### Requirements
+### Setup
+### Status
+
