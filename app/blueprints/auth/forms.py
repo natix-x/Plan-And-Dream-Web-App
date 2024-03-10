@@ -8,15 +8,16 @@ class RegistrationForm(FlaskForm):
         "Username", validators=[Length(min=4, max=20), DataRequired()]
     )
     email_address = EmailField(
-        "Email Address", validators=[Length(min=6, max=50), DataRequired(), Email()]
+        "Email Address", validators=[Length(min=6, max=50),
+                                     DataRequired(),
+                                     Email()]
     )
     password1 = PasswordField(
         "Password",
         validators=[
             Length(min=6),
             DataRequired(),
-            EqualTo("password2", message="Passwords must match"),
         ],
     )
-    password2 = PasswordField("Repeat Password")
+    password2 = PasswordField("Repeat Password", validators=[EqualTo("password1", message="Passwords must match"), DataRequired()])
     submit = SubmitField("Create account")
