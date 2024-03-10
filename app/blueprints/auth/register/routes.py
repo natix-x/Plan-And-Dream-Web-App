@@ -1,5 +1,5 @@
-from app.blueprints.register import register
-from app.blueprints.register.form import RegistrationForm
+from app.blueprints.auth.register import register
+from app.blueprints.auth.forms import RegistrationForm
 from flask import render_template, request, redirect, url_for, flash
 from database.models.users import User
 from app import db, bcrypt
@@ -11,7 +11,7 @@ def register_page():
     if request.method == "POST" and form.validate_on_submit():
         if User.query.filter_by(username=form.username.data).first():  # check if username already exists in db
             flash('Username already registered!', 'danger')
-        if User.query.filter_by(email_address=form.email_address.data).first():  # check if email already exists in db
+        elif User.query.filter_by(email_address=form.email_address.data).first():  # check if email already exists in db
             flash("Email already registered!", 'danger')
         else:
             new_user = User(
