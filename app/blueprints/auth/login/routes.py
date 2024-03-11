@@ -20,7 +20,7 @@ def login_page():
         if user:
             if check_password_hash(user.password_hash, form.password.data):
                 login_user(user, remember=True)
-                flash(f'Success! Now you are logged as {user.username}.', 'success')
+                flash(f'Success! Now you are now logged as {user.username}.', 'success')
                 return redirect(url_for("user_page.user_page", username=user.username))
             else:
                 flash("Username and password don't match.", "danger")
