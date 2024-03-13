@@ -1,43 +1,66 @@
 {% extends "base.html" %}
 {% block title %}User Page{% endblock %}
 {% block content %}
-
-<button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
-        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"></path>
-    </svg>
-    Add new
-</button>
-
+<style>
+   td {
+   padding: 5px;
+   text-align: center;
+   font-size: 25px;
+   }
+   th {
+   font-size: 35px;
+   }
+</style>
+<div class="container">
+   <div class="row">
+      <div class="col">
+         <table class="table-dark table-borderless">
+            <thead>
+               <tr class="table-dark">
+                  <th scope="col">Your TODO lists:</th>
+                  <th>
+                     <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                           <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"></path>
+                        </svg>
+                        <span class="visually-hidden">Add list</span>
+                     </button>
+                  </th>
+               </tr>
+            </thead>
+            <tbody>
+               {% for item in user_items %}
+               <tr class="table-dark">
+                  <td class="table-dark">{{ item.text }}</td>
+               </tr>
+               {% endfor %}
+            </tbody>
+         </table>
+      </div>
+   </div>
+</div>
 <!-- Modal -->
 <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">Add new TO DO list</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">Add new TO DO list</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+         </div>
+         <form method="post">
+            {{ list_item.hidden_tag() }}
+            <div class="modal-body">
+               <div class="mb-3">
+                  <label for="exampleTitle1" class="form-label" ></label>
+                  <input type="text" class="form-control" id="exampleTitle1" name="title">
+               </div>
             </div>
-            <form method="post">
-                {{ list_item.hidden_tag() }}
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="exampleTitle1" class="form-label" ></label>
-                        <input type="text" class="form-control" id="exampleTitle1" name="title">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-light">Add</button>
-                </div>
-            </form>
-        </div>
-    </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+               <button type="submit" class="btn btn-light">Add</button>
+            </div>
+         </form>
+      </div>
+   </div>
 </div>
-
-
-
-{% for item in user_items %}
-    <p>{{ item.text }}</p>
-{% endfor %}
-
 {% endblock %}
