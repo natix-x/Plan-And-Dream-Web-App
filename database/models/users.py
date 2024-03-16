@@ -6,7 +6,7 @@ from .lists import Lists
 
 class User(db.Model, UserMixin):
     """
-    defines table called "users" which contains 4 columns: id, username, email_address and password,
+    defines table called "users" which contains 4 columns: id (primary key), username, email_address and password,
     this model is related to 'Lists'
     """
 
@@ -20,4 +20,4 @@ class User(db.Model, UserMixin):
     def __init__(self, username, email_address, password):
         self.username = username
         self.email_address = email_address
-        self.password = generate_password_hash(password).decode("utf-8")
+        self.password = generate_password_hash(password).decode("utf-8")  # hash password
