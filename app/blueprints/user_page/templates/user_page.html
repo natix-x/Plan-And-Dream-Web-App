@@ -2,11 +2,6 @@
 {% block title %}User Page{% endblock %}
 {% block content %}
 <style>
-   td {
-   padding: 5px;
-   text-align: center;
-   font-size: 25px;
-   }
    th {
    font-size: 35px;
    }
@@ -18,24 +13,57 @@
             <thead>
                <tr class="table-dark">
                   <th scope="col">Your TODO lists:</th>
-                  <th>
-                     <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
-                           <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"></path>
-                        </svg>
-                        <span class="visually-hidden">Add list</span>
-                     </button>
-                  </th>
+                  <th></th>
+                  <th></th>
                </tr>
             </thead>
             <tbody>
-               {% for item in user_items %}
+               {% for list in user_lists %}
                <tr class="table-dark">
-                  <td class="table-dark">{{ item.text }}</td>
+                  <td class="align-middle">
+                     <div class="d-flex">
+                        <div class="accordion-item">
+                           <h2 class="accordion-header">
+                              <button class="accordion-button collapsed custom-button fs-4" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="false" aria-controls="collapse{{ loop.index }}">
+                              {{ list.text }}
+                              </button>
+                           </h2>
+                           <div id="collapse{{ loop.index }}" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                              <div class="accordion-body">
+                                 {% set things = ThingsToDo.query.filter_by(list_id=list.id).all() %}
+                                 <ul>
+                                    {% for thing in things %}
+                                    <li>{{ thing.text }}</li>
+                                    {% endfor %}
+                                 </ul>
+                                 <form method="post" action="{{ url_for('user_page.add_thing_todo', list_id=list.id) }}">
+                                    {{ thing_to_do.hidden_tag() }}
+                                    <div class="modal-body">
+                                       <div class="mb-3">
+                                          <label for="exampleThing1" class="form-label" ></label>
+                                          <input type="text" class="form-control" id="exampleThing1" name="text">
+                                       </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                       <button type="submit" class="btn btn-light">Add</button>
+                                    </div>
+                                 </form>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </td>
                </tr>
                {% endfor %}
             </tbody>
          </table>
+         <br>
+         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+               <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"></path>
+            </svg>
+            Add new list
+         </button>
       </div>
    </div>
 </div>
@@ -47,12 +75,12 @@
             <h5 class="modal-title" id="staticBackdropLabel">Add new TO DO list</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
          </div>
-         <form method="post">
-            {{ list_item.hidden_tag() }}
+         <form method="post" action="{{ url_for('user_page.add_list_title', user_id = current_user.id) }}">
+            {{ list_title.hidden_tag() }}
             <div class="modal-body">
                <div class="mb-3">
                   <label for="exampleTitle1" class="form-label" ></label>
-                  <input type="text" class="form-control" id="exampleTitle1" name="title">
+                  <input type="text" class="form-control" id="exampleTitle1" name="text">
                </div>
             </div>
             <div class="modal-footer">
