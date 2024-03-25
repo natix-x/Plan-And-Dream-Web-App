@@ -47,7 +47,7 @@ def add_list_title(user_id):
     if list_title.validate_on_submit():
         new_item = Lists(text=list_title.text.data, user_id=user_id)
         db.session.add(new_item)
-        db.session.commit()
+        db.session.commit()  # add new thing to ThingsToDo table in db
 
     return redirect(url_for("user_page.user_page_view", username=current_user.username))
 
@@ -60,12 +60,12 @@ def add_thing_todo(list_id):
     :param list_id: primary key of chosen list
     :return: updated database with added new thing to ThingsToDo table
     """
-    list_title = Lists.query.get(list_id)
 
     thing_to_do = ListItem()
     if thing_to_do.validate_on_submit():
-        new_thing = ThingsToDo(text=thing_to_do.text.data, list_id=list_title.id)
+        new_thing = ThingsToDo(text=thing_to_do.text.data, list_id=list_id)
         db.session.add(new_thing)
-        db.session.commit()
+        db.session.commit()  # add new thing to ThingsToDo table in db
 
     return redirect(url_for("user_page.user_page_view", username=current_user.username))
+
