@@ -1,4 +1,4 @@
-from app import db
+from app import db, ma
 from .todo import ThingsToDo
 
 
@@ -19,3 +19,18 @@ class Lists(db.Model):
     done = db.Column(db.Boolean, default=False, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     things_on_the_list = db.relationship("ThingsToDo", backref="list", lazy=True)
+
+
+class ListSchema(ma.Schema):
+    """
+    handler for creation schemas objects for easier conversion to json
+    """
+    class Meta:
+        """
+        stores table's column names
+        """
+        fields = ('id', 'text', 'done', 'user_id')
+
+
+list_schema = ListSchema()  # handles singular record
+lists_schema = ListSchema(many=True)  # handles multiple record
