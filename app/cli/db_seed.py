@@ -6,7 +6,7 @@ from database.models.users import User
 @app.cli.command("db_seed")
 def db_seed():
     """
-    imports defined db models: To Do & User , defines seed data, and commits the changes to the database.
+    imports defined db models: To Do & Users , defines seed data, and commits the changes to the database.
     """
     first_thing = ToDo(text="Do something useful")
     db.session.add(first_thing)

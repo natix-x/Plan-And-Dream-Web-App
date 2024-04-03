@@ -6,7 +6,7 @@ from app import db, bcrypt
 from flask_login import login_user
 
 
-@register.route("/register", methods=["GET", "POST"])
+@register.route("/register/", methods=["GET", "POST"])
 def register_page():
     """
     displays registration form and:
@@ -31,4 +31,4 @@ def register_page():
             flash(f'Account created successfully! Now you are now logged as {new_user.username}.', 'success')
             return redirect(url_for("user_page.user_page_view", username=new_user.username))  # redirect user to user's main page
 
-    return render_template("register.html", form=form)
+    return render_template("register/register.html", form=form)

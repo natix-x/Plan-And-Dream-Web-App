@@ -3,7 +3,7 @@ from app.blueprints.auth.forms import LoginForm
 from flask import render_template, request, redirect, url_for, flash
 from app import login_manager, db
 from database.models.users import Users
-from flask_login import login_user, current_user, logout_user
+from flask_login import login_user, current_user, logout_user, login_required
 from flask_bcrypt import check_password_hash
 
 
@@ -17,7 +17,7 @@ def load_user(user_id):
     return Users.query.get(user_id)
 
 
-@login.route("/login", methods=["GET", "POST"])
+@login.route("/login/", methods=["GET", "POST"])
 def login_page():
     """
     displays login form and:
@@ -40,10 +40,11 @@ def login_page():
         else:
             flash("Nickname does not exist.", "danger")
 
-    return render_template("login.html", form=form)
+    return render_template("login/login.html", form=form)
 
 
-@login.route("/logout")
+@login_required
+@login.route("/logout/")
 def logout():
     """
     logs user out
