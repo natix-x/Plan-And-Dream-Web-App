@@ -3,13 +3,13 @@
 {% block content %}
 <style>
    th {
-      font-size: 35px;
+   font-size: 35px;
    }
 </style>
 <div class="container">
    <div class="row">
       <div class="col">
-         <table class="table-dark table-borderless">
+         <table class="table-dark table-borderless" id="listTable">
             <thead>
                <tr class="table-dark">
                   <th colspan="3">Your TODO lists:</th>
@@ -17,14 +17,14 @@
             </thead>
             <tbody>
                {% for list in user_lists %}
-               <tr class="table-dark">
+               <tr class="table-dark" id="listRow{{ list.id }}">
                   <td>
                      <div>
-                        <form method="post" action = "{{ url_for('user_page.change_list_status', list_id = list.id) }}">
-                                                <input type="hidden" name="list_status" value="{% if list.done %}done{% else %}undone{% endif %}">
-                                                <input class="form-check-input" type="checkbox" id="myCheck{{ list.id }}" value="" aria-label="..." onclick="crossItem('list_title{{ list.id }}', 'myCheck{{ list.id }}')" {% if list.done %} checked {% endif %}>
-                                                <button type="submit" style="display: none;"></button>
-                                             </form>
+                        <form method="post" action="{{ url_for('user_page.change_list_status', list_id = list.id) }}">
+                           <input type="hidden" name="list_status" value="{% if list.done %}done{% else %}undone{% endif %}">
+                           <input class="form-check-input" type="checkbox" id="myCheck{{ list.id }}" value="" aria-label="..." onclick="crossItem('list_title{{ list.id }}', 'myCheck{{ list.id }}')" {% if list.done %} checked {% endif %}>
+                           <button type="submit" style="display: none;"></button>
+                        </form>
                      </div>
                   </td>
                   <td colspan="2" class="align-middle">
@@ -43,13 +43,14 @@
                                        {% for thing in things %}
                                        <tr class="table-dark">
                                           <td>
-                                             <form method="post" action = "{{ url_for('user_page.change_list_status', thing_id = thing.id) }}">
+                                             <form method="post" action="{{ url_for('user_page.change_list_status', thing_id = thing.id) }}">
                                                 <input type="hidden" name="list_status" value="{% if thing.done %}done{% else %}undone{% endif %}">
                                                 <input class="form-check-input light" type="checkbox" id="myCheck{{ list.id }}_{{ loop.index0 }}" value="" aria-label="..." onclick="crossItem('thing_title{{ list.id }}_{{ loop.index0 }}', 'myCheck{{ list.id }}_{{ loop.index0 }}')" {% if thing.done %} checked {% endif %}>
                                                 <button type="submit" style="display: none;"></button>
                                              </form>
                                           </td>
-                                          <td><label class="form-check-label {% if thing.done %}text-decoration-line-through{% endif %}" for="myCheck{{ list.id }}_{{ loop.index0 }}" id="thing_title{{ list.id }}_{{ loop.index0 }}">{{ thing.text }}</label>
+                                          <td>
+                                             <label class="form-check-label {% if thing.done %}text-decoration-line-through{% endif %}" for="myCheck{{ list.id }}_{{ loop.index0 }}" id="thing_title{{ list.id }}_{{ loop.index0 }}">{{ thing.text }}</label>
                                           </td>
                                        </tr>
                                        {% endfor %}
@@ -66,7 +67,7 @@
             </tbody>
          </table>
          <br>
-         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="addListButton">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"></path>
             </svg>
@@ -84,8 +85,8 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
          </div>
          <form method="post" action="{{ url_for('user_page.add_list_title', user_id = current_user.id) }}">
-            {{ list_title.hidden_tag() }}
             <div class="modal-body">
+               {{ list_title.hidden_tag() }}
                <div class="mb-3">
                   <label for="exampleTitle1" class="form-label"></label>
                   <input type="text" class="form-control" id="exampleTitle1" name="text">
@@ -93,7 +94,7 @@
             </div>
             <div class="modal-footer">
                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-               <button type="submit" class="btn btn-light">Add</button>
+               <button type="button" class="btn btn-light" onclick="addList(document.getElementById('exampleTitle1').value)">Add</button>
             </div>
          </form>
       </div>
@@ -125,35 +126,85 @@
    </div>
 </div>
 {% endfor %}
-
-<button type="button" class="btn btn-secondary">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
-  <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"></path>
-  <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"></path>
-</svg>
-              </button>
-
 <script>
    function crossItem(textId, checkboxId) {
-    let text = document.getElementById(textId);
-    let checkbox = document.getElementById(checkboxId);
-    let form = checkbox.closest('form');
+      let text = document.getElementById(textId);
+      let checkbox = document.getElementById(checkboxId);
+      let form = checkbox.closest('form');
 
+      if (form) {
+         let hiddenInput = form.querySelector('input[name="list_status"]');
+         hiddenInput.value = checkbox.checked ? "done" : "undone";
 
-     if (form) {
-        let hiddenInput = form.querySelector('input[name="list_status"]');
-        hiddenInput.value = checkbox.checked ? "done" : "undone";
-
-        if (checkbox.checked) {
+         if (checkbox.checked) {
             text.style.textDecoration = "line-through";
-        } else {
+         } else {
             text.style.textDecoration = "none";
-        }
+         }
 
-        form.submit(); // Submit the form
-    } else {
-        console.error("No form found");
-    }
+         form.submit();
+      } else {
+         console.error("No form found");
+      }
    }
+
+   function addList(text) {
+    const formData = new FormData();
+    formData.append('text', text);
+
+    fetch("{{ url_for('user_page.add_list_title', user_id = current_user.id) }}", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Data received from server:', data);
+        if (data && data.success) {
+            const table = document.getElementById("listTable");
+            let new_item = data["new_item"];
+            let newRow = document.createElement("tr");
+            newRow.innerHTML = `
+                <td>
+                    <div>
+                        <form method="post" action="/user_page/change_list_status/${new_item.id}">
+                            <input type="hidden" name="list_status" value="${new_item.done ? 'done' : 'undone'}">
+                            <input class="form-check-input" type="checkbox" id="myCheck${new_item.id}" value="" aria-label="..." onclick="crossItem('new_item_title${new_item.id}', 'myCheck${new_item.id}')" ${new_item.done ? 'checked' : ''}>
+                            <button type="submit" style="display: none;"></button>
+                        </form>
+                    </div>
+                </td>
+                <td colspan="2" class="align-middle">
+                    <div class="d-flex">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed custom-button fs-4" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${new_item.id}" aria-expanded="false" aria-controls="collapse${new_item.id}" id="new_item_title${new_item.id}">
+                                    ${new_item.text}
+                                </button>
+                            </h2>
+                            <div id="collapse${new_item.id}" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <table class="table-dark table-borderless" id="table${new_item.id}">
+                                        <tbody id="thingsToDo${new_item.id}">
+                                        </tbody>
+                                    </table>
+                                    <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal${new_item.id}">Add</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            `;
+
+            table.appendChild(newRow);
+
+
+            const myModalEl = document.getElementById('staticBackdrop');
+   const modal = bootstrap.Modal.getInstance(myModalEl)
+   modal.hide();
+        }
+    })
+    .catch(error => console.error('Error adding new list:', error));
+   }
+
 </script>
 {% endblock %}
