@@ -2,7 +2,7 @@ from app.blueprints.user_page import user_page
 from app import app, db
 from flask import render_template, request, abort, redirect, url_for, jsonify
 from database.models.lists import Lists, list_schema, lists_schema
-from database.models.todo import ThingsToDo
+from database.models.todo import ThingsToDo, thing_to_do_schema, things_to_do_schema
 from flask_login import login_required, current_user
 from app.blueprints.user_page.form import ListItem
 
@@ -37,8 +37,13 @@ def user_page_view(username):
 @login_required
 @user_page.route("/add_list_title/<int:user_id>/", methods=["POST"])
 def add_list_title(user_id):
-
-    text = request.form.get('text')
+    """
+    adds new list to 'lists' table in db
+    :param user_id: primary key of user to whom new list belongs
+    :return: JSON formatted data, if successfully added: success: True and json object of added list attributes,
+    else: success: False
+    """
+    text = request.form.get("text")
 
     if text:
         new_item = Lists(text=text, user_id=user_id)
@@ -54,18 +59,20 @@ def add_list_title(user_id):
 @user_page.route("/add_thing_todo/<int:list_id>/", methods=["POST"])
 def add_thing_todo(list_id):
     """
-    adds things to particular lists based on specific list_id
-    :param list_id: primary key of chosen list
-    :return: updated database with added new thing to ThingsToDo table
+    adds things to 'ThingsToDO' table in db
+    :param list_id: primary key of chosen list to which added thing belongs
+    :return: JSON formatted data, if successfully added: success: True and json object of added thing attributes,
+    else: success: False
     """
-
-    thing_to_do = ListItem()
-    if thing_to_do.validate_on_submit():
-        new_thing = ThingsToDo(text=thing_to_do.text.data, list_id=list_id)
-        db.session.add(new_thing)
+    text = request.form.get("text")
+    if text:
+        new_item = ThingsToDo(text=text, list_id=list_id)
+        db.session.add(new_item)
         db.session.commit()  # add new thing to 'thingstodo' table in db
 
-    return redirect(url_for("user_page.user_page_view", username=current_user.username))
+        return jsonify({"success": True, "new_item": thing_to_do_schema.dump(new_item)})
+
+    return jsonify({"success": False})
 
 
 @login_required
@@ -99,4 +106,3 @@ def change_list_status(list_id=None, thing_id=None):
         list_item.done = False  # set done equal to False
 
     db.session.commit()  # commit changes
-    return redirect(url_for("user_page.user_page_view", username = current_user.username))

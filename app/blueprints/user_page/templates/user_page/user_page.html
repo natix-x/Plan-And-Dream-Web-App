@@ -37,7 +37,7 @@
                            </h2>
                            <div id="collapse{{ list.id }}" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                               <div class="accordion-body">
-                                 <table class="table-dark table-borderless">
+                                 <table class="table-dark table-borderless" id="thingstable{{list.id}}">
                                     <tbody>
                                        {% set things = ThingsToDo.query.filter_by(list_id=list.id).all() %}
                                        {% for thing in things %}
@@ -113,19 +113,21 @@
             {{ thing_to_do.hidden_tag() }}
             <div class="modal-body">
                <div class="mb-3">
-                  <label for="exampleTitle2" class="form-label"></label>
-                  <input type="text" class="form-control" id="exampleTitle2" name="text">
+                  <label for="exampleTitle2{{list.id}}" class="form-label"></label>
+                  <input type="text" class="form-control" id="exampleTitle2{{list.id}}" name="text">
                </div>
             </div>
             <div class="modal-footer">
                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-               <button type="submit" class="btn btn-light">Add</button>
+               <button type="button" class="btn btn-light" onclick="addThing(document.getElementById('exampleTitle2{{list.id}}').value, '{{ list.id }}')">Add</button>
             </div>
          </form>
       </div>
    </div>
 </div>
 {% endfor %}
+<!-- Container for modals -->
+<div id="modalParent"></div>
 <script>
    function crossItem(textId, checkboxId) {
       let text = document.getElementById(textId);
@@ -152,7 +154,7 @@
     const formData = new FormData();
     formData.append('text', text);
 
-    fetch("{{ url_for('user_page.add_list_title', user_id = current_user.id) }}", {
+    fetch("{{ url_for('user_page.add_list_title', user_id=current_user.id) }}", {
         method: "POST",
         body: formData
     })
@@ -160,13 +162,13 @@
     .then(data => {
         console.log('Data received from server:', data);
         if (data && data.success) {
+            let new_item = data['new_item'];
             const table = document.getElementById("listTable");
-            let new_item = data["new_item"];
             let newRow = document.createElement("tr");
             newRow.innerHTML = `
                 <td>
                     <div>
-                        <form method="post" action="/user_page/change_list_status/${new_item.id}">
+                        <form method="post" action="/change_list_status/${new_item.id}">
                             <input type="hidden" name="list_status" value="${new_item.done ? 'done' : 'undone'}">
                             <input class="form-check-input" type="checkbox" id="myCheck${new_item.id}" value="" aria-label="..." onclick="crossItem('new_item_title${new_item.id}', 'myCheck${new_item.id}')" ${new_item.done ? 'checked' : ''}>
                             <button type="submit" style="display: none;"></button>
@@ -177,16 +179,13 @@
                     <div class="d-flex">
                         <div class="accordion-item">
                             <h2 class="accordion-header">
-                                <button class="accordion-button collapsed custom-button fs-4" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${new_item.id}" aria-expanded="false" aria-controls="collapse${new_item.id}" id="new_item_title${new_item.id}">
+                                <button class="accordion-button collapsed custom-button fs-4" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${new_item.id}" aria-expanded="false" aria-controls="collapse${new_item.id}" id="list_title${new_item.id}">
                                     ${new_item.text}
                                 </button>
                             </h2>
                             <div id="collapse${new_item.id}" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
-                                    <table class="table-dark table-borderless" id="table${new_item.id}">
-                                        <tbody id="thingsToDo${new_item.id}">
-                                        </tbody>
-                                    </table>
+                                    <table class="table-dark table-borderless" id="thingstable${new_item.id}"></table>
                                     <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal${new_item.id}">Add</button>
                                 </div>
                             </div>
@@ -197,14 +196,90 @@
 
             table.appendChild(newRow);
 
+            const myModalEl2 = document.getElementById('staticBackdrop');
+            const modal2 = bootstrap.Modal.getInstance(myModalEl2);
+            modal2.hide();
 
-            const myModalEl = document.getElementById('staticBackdrop');
-   const modal = bootstrap.Modal.getInstance(myModalEl)
-   modal.hide();
+            // Append modal for new item
+            const modalParent = document.getElementById('modalParent');
+            const modalElement = document.createElement('div');
+            modalElement.innerHTML = `
+                <div class="modal fade" id="exampleModal${new_item.id}" tabindex="-1" aria-labelledby="exampleModalLabel${new_item.id}" aria-hidden="true">
+                   <div class="modal-dialog">
+                      <div class="modal-content">
+                         <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel${new_item.id}">Add new item to ${new_item.text}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                         </div>
+                         <form method="post" action="/add_thing_todo/${new_item.id}">
+                            <div class="modal-body">
+                               <div class="mb-3">
+                                  <label for="exampleTitle2" class="form-label"></label>
+                                  <input type="text" class="form-control" id="exampleTitle2" name="text">
+                               </div>
+                            </div>
+                            <div class="modal-footer">
+                               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                               <button type="button" class="btn btn-light" onclick="addThing(document.getElementById('exampleTitle2').value, ${new_item.id})">Add</button>
+                            </div>
+                         </form>
+                      </div>
+                   </div>
+                </div>
+            `;
+            modalParent.appendChild(modalElement);
+        } else {
+            console.error("Adding new item failed.");
         }
     })
-    .catch(error => console.error('Error adding new list:', error));
+    .catch(error => console.error(error));
    }
+
+
+
+   function addThing(text, list_id) {
+   const formData = new FormData();
+   formData.append('text', text);
+
+    let url = `/add_thing_todo/${list_id}`;
+   console.log(url)
+   console.log(text)
+    fetch(url, {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Data received from server:', data);
+        if (data && data.success) {
+            let new_item = data["new_item"];
+            let table = document.getElementById(`thingstable${new_item.list_id}`);
+            let newRow = document.createElement("tr");
+            newRow.innerHTML = `<td>
+                                    <form method="post" action="/change_list_status/${new_item.id}">
+                                        <input type="hidden" name="list_status" value="${new_item.done ? 'done' : 'undone'}">
+                                        <input class="form-check-input light" type="checkbox" id="myCheck${new_item.id}" value="" aria-label="..." onClick="crossItem('thing_title${new_item.list_id}_${new_item.id}', 'myCheck${new_item.id}')" ${new_item.done ? 'checked' : ''}>
+                                        <button type="submit" style="display: none;"></button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <label class="form-check-label ${new_item.done ? 'text-decoration-line-through' : ''}" for="myCheck${new_item.id}" id="thing_title${new_item.list_id}_${new_item.id}">${new_item.text}</label>
+                                </td>`;
+            table.appendChild(newRow);
+
+
+
+         const myModalEl2 = document.getElementById('exampleModal' + new_item.list_id)
+         const modal2 = bootstrap.Modal.getInstance(myModalEl2);
+         modal2.hide();
+        } else {
+            console.error("Adding new item failed.");
+        }
+    })
+    .catch(error => console.error(error));
+   }
+
+
 
 </script>
 {% endblock %}
