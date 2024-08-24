@@ -16,15 +16,17 @@ class ThingsToDo(db.Model):
     done = db.Column(db.Boolean, default=False, nullable=False)
     list_id = db.Column(db.Integer, db.ForeignKey("lists.id"))
 
-    class ThingToDoSchema(ma.Schema):
-        """
-        handler for creation schemas objects for easier conversion to json
-        """
-        class Meta:
-            """
-            stores table's columns name
-            """
-            fields = ('id', 'text', 'done', 'list_id')
 
-    thing_to_do_schema = ThingToDoSchema()  # handles singular record
-    things_to_do_schema = ThingToDoSchema(many=True)  # handles multiple record
+class ThingToDoSchema(ma.Schema):
+    """
+    handler for creation schemas objects for easier conversion to json
+    """
+    class Meta:
+        """
+        stores table's columns name
+        """
+        fields = ('id', 'text', 'done', 'list_id')
+
+
+thing_to_do_schema = ThingToDoSchema()  # handles singular record
+things_to_do_schema = ThingToDoSchema(many=True)  # handles multiple record
