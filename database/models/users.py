@@ -1,6 +1,6 @@
 from app import db, ma
-from flask_login import UserMixin
 from flask_bcrypt import generate_password_hash
+from flask_login import UserMixin
 
 
 class Users(db.Model, UserMixin):
@@ -19,17 +19,23 @@ class Users(db.Model, UserMixin):
     def __init__(self, username, email_address, password):
         self.username = username
         self.email_address = email_address
-        self.password = generate_password_hash(password).decode("utf-8")  # hash password
+        self.password = generate_password_hash(password).decode(
+            "utf-8"
+        )  # hash password
 
-    class UserSchema(ma.Schema):
-        """
-        handler for creation schemas objects for easier conversion to json
-        """
-        class Meta:
-            """
-            stores table's columns name
-            """
-            fields = ('id', 'username', 'email_address', 'password')
 
-    user_schema = UserSchema()  # handles singular record
-    users_schema = UserSchema(many=True)  # handles multiple records
+class UserSchema(ma.Schema):
+    """
+    handler for creation schemas objects for easier conversion to json
+    """
+
+    class Meta:
+        """
+        stores table's columns name
+        """
+
+        fields = ("id", "username", "email_address", "password")
+
+
+user_schema = UserSchema()  # handles singular record
+users_schema = UserSchema(many=True)  # handles multiple records
