@@ -4,6 +4,7 @@ handling user activities on his unique user page
 """
 from flask import Blueprint
 
-user_page = Blueprint("user_page", __name__, template_folder="templates", static_folder="static")
+user_page = Blueprint("user_page", __name__, template_folder="templates", static_folder="static",
+                      static_url_path='/user_page/static/')
 
 from app.blueprints.user_page import routes

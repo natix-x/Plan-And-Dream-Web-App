@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}User Page{% endblock %}
-
 {% block content %}
+
 
 <style>
    th {
@@ -147,11 +147,10 @@
 <!-- Container for modals -->
 <div id="modalParent"></div>
 
-{% endblock %}
 
-{% block script %}
 
-<script src="{{ url_for('static', filename='js/user_page_functions.js') }}" defer></script>
 
+<script src="{{ url_for('user_page.static', filename='js/user_page_functions.js') }}"></script>
 
 {% endblock %}
+
