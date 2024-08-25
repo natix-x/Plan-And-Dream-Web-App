@@ -3,9 +3,18 @@
 {% block content %}
 <div class="container">
    <div class="text-center p-3">
-      <img src="{{ url_for('static', filename='rainbow_icon.png') }}" class="img-fluid" alt="rainbow" width="150" height="75">
+      <img src="{{ url_for('static', filename='images/rainbow_icon.png') }}" class="img-fluid" alt="rainbow" width="150" height="75">
       <h1>Plan&Dream</h1>
    </div>
+   {% if current_user.is_authenticated %}
+   <div class="text-center">
+      <p>Hi {{ current_user.username }}!</p>
+      <p>Check your current lists and add more of them to achieve your goals!</p>
+      <p>With Plan&Dream, you can create to-do lists, bucket lists, and any other lists you desire.</p>
+      <p>Say goodbye to procrastination and be as most productive person as you can be!</p>
+      <a href="{{ url_for('user_page.user_page_view', username=current_user.username) }}" class="btn btn-light btn-lg">Go to your lists</a>
+   </div>
+   {% else %}
    <div class="text-center">
       <p>Ever find yourself forgetting what needs to be done? Struggling to tick off all those planned tasks?</p>
       <p>Or simply looking to organize your future plans?</p>
@@ -15,5 +24,6 @@
       <br>
       <p>Already have an account? <a href="{{ url_for('login.login_page') }}" class="text-light">Login</a></p>
    </div>
+   {% endif %}
 </div>
 {% endblock %}
