@@ -1,12 +1,15 @@
+/**
+ * Crosses out list/task which has checkbox checked next to it and the status of being done according to the database.
+ * @param {string} textId Id of the text to be crossed
+ * @param {string} checkboxId Id of the checkbox checked
+ */
 function crossItem(textId, checkboxId) {
     let text = document.getElementById(textId);
     let checkbox = document.getElementById(checkboxId);
     let form = checkbox.closest('form');
-
     if (form) {
-        let hiddenInput = form.querySelector('input[name="list_status"]');
+        let hiddenInput = form.querySelector('input[name="list_status"]') || form.querySelector('input[name="thing_status"]');
         hiddenInput.value = checkbox.checked ? "done" : "undone";
-
         if (checkbox.checked) {
             text.style.textDecoration = "line-through";
         } else {
@@ -20,6 +23,22 @@ function crossItem(textId, checkboxId) {
             .then(response => response.json())
             .then(data => {
                 console.log(data);
+
+                // If it's a list and marked as done, cross out all associated tasks
+                if (textId.startsWith('list_title')) {
+                    let listId = textId.replace('list_title', '');
+                    let thingsTable = document.getElementById(`thingstable${listId}`);
+
+                    if (thingsTable) {
+                        let checkboxes = thingsTable.querySelectorAll('input[type="checkbox"]');
+                        let labels = thingsTable.querySelectorAll('label');
+
+                        checkboxes.forEach((cb, index) => {
+                            cb.checked = checkbox.checked;
+                            labels[index].style.textDecoration = checkbox.checked ? "line-through" : "none";
+                        });
+                    }
+                }
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -29,6 +48,10 @@ function crossItem(textId, checkboxId) {
     }
 }
 
+/**
+ * Adds list to 'lists' table by fetching from add_list url and displays it on user's unique page.
+ * @param {string} text List title
+ */
 function addList(text) {
     const formData = new FormData();
     let url = `/add_list/`
@@ -60,7 +83,7 @@ function addList(text) {
                      <div>
                          <form method="post" action="/change_list_status/${new_item.id}">
                              <input type="hidden" name="list_status" value="${new_item.done ? 'done' : 'undone'}">
-                             <input class="form-check-input" type="checkbox" id="myCheck${new_item.id}" value="" aria-label="..." onclick="crossItem('new_item_title${new_item.id}', 'myCheck${new_item.id}')" ${new_item.done ? 'checked' : ''}>
+                             <input class="form-check-input" type="checkbox" id="myCheck${new_item.id}" value="" aria-label="..." onclick="crossItem('list_title${new_item.id}', 'myCheck${new_item.id}')" ${new_item.done ? 'checked' : ''}>
                              <button type="submit" style="display: none;"></button>
                          </form>
                      </div>
@@ -126,7 +149,11 @@ function addList(text) {
 
 }
 
-
+/**
+ * Adds task to 'thingstodo' table by fetching from add_thing_to_do url and displays it on user's unique page.
+ * @param {string} text Task name
+ * @param {number} list_id Id of the list that particular task belongs to
+ */
 function addThing(text, list_id) {
     const formData = new FormData();
     formData.append('text', text);
@@ -155,7 +182,7 @@ function addThing(text, list_id) {
                </button>
                    </td>
    <td>
-                                     <form method="post" action="/change_list_status/${new_item.id}">
+                                     <form method="post" action="/change_thing_status/${new_item.id}">
                                          <input type="hidden" name="list_status" value="${new_item.done ? 'done' : 'undone'}">
                                          <input class="form-check-input light" type="checkbox" id="myCheck${new_item.id}" value="" aria-label="..." onClick="crossItem('thing_title${new_item.list_id}_${new_item.id}', 'myCheck${new_item.id}')" ${new_item.done ? 'checked' : ''}>
                                          <button type="submit" style="display: none;"></button>
@@ -178,6 +205,10 @@ function addThing(text, list_id) {
         .catch(error => console.error(error));
 }
 
+/**
+ * Deletes all tasks associated with particular list by fetching from delete_things_to_do url and deletes list from 'lists' by fetching from delete_list url.
+ * @param {number} listId Id of the list to be deleted
+ */
 function deleteList(listId) {
     fetch(`/delete_things_to_do/${listId}`, {
             method: "POST"
@@ -204,6 +235,10 @@ function deleteList(listId) {
 
 }
 
+/**
+ * Deletes task by fetching from delete_things_to_do url.
+ * @param {number} thingId Id of the task to be deleted
+ */
 function deleteThing(thingId) {
     fetch(`/delete_thing_to_do/${thingId}`, {
             method: "POST"
