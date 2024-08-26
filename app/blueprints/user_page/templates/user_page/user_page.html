@@ -1,11 +1,15 @@
 {% extends "base.html" %}
 {% block title %}User Page{% endblock %}
 {% block content %}
-
-
 <style>
    th {
    font-size: 35px;
+   }
+   .table-dark td, .table-dark th {
+   vertical-align: middle;
+   }
+   .accordion-button {
+   text-align: left;
    }
 </style>
 <div class="container">
@@ -21,7 +25,7 @@
                {% for list in user_lists %}
                <tr class="table-dark" id="listRow{{ list.id }}">
                   <td>
-                     <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteList('{{list.id}}')">
+                     <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteList('{{ list.id }}')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"></path>
                            <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"></path>
@@ -38,44 +42,42 @@
                      </div>
                   </td>
                   <td colspan="2" class="align-middle">
-                     <div class="d-flex">
-                        <div class="accordion-item">
-                           <h2 class="accordion-header">
-                              <button class="accordion-button collapsed custom-button fs-4" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ list.id }}" aria-expanded="false" aria-controls="collapse{{ list.id }}" id="list_title{{ list.id }}">
-                              {{ list.text }}
-                              </button>
-                           </h2>
-                           <div id="collapse{{ list.id }}" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                              <div class="accordion-body">
-                                 <table class="table-dark table-borderless" id="thingstable{{list.id}}">
-                                    <tbody>
-                                       {% set things = ThingsToDo.query.filter_by(list_id=list.id).all() %}
-                                       {% for thing in things %}
-                                       <tr class="table-dark" id="thingstodoRow{{ thing.id }}">
-                                          <td>
-                                             <button type="button" class="btn btn-outline-light btn-sm" onclick="deleteThing('{{ thing.id }}')">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
-                                                   <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"></path>
-                                                   <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"></path>
-                                                </svg>
-                                             </button>
-                                          </td>
-                                          <td>
-                                             <form method="post" action="{{ url_for('user_page.change_list_status', thing_id = thing.id) }}">
-                                                <input type="hidden" name="list_status" value="{% if thing.done %}done{% else %}undone{% endif %}">
-                                                <input class="form-check-input light" type="checkbox" id="myCheck{{ list.id }}_{{ loop.index0 }}" value="" aria-label="..." onclick="crossItem('thing_title{{ list.id }}_{{ loop.index0 }}', 'myCheck{{ list.id }}_{{ loop.index0 }}')" {% if thing.done %} checked {% endif %}>
-                                                <button type="submit" style="display: none;"></button>
-                                             </form>
-                                          </td>
-                                          <td>
-                                             <label class="form-check-label {% if thing.done %}text-decoration-line-through{% endif %}" for="myCheck{{ list.id }}_{{ loop.index0 }}" id="thing_title{{ list.id }}_{{ loop.index0 }}">{{ thing.text }}</label>
-                                          </td>
-                                       </tr>
-                                       {% endfor %}
-                                    </tbody>
-                                 </table>
-                                 <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal{{ list.id }}">Add</button>
-                              </div>
+                     <div class="accordion-item">
+                        <h2 class="accordion-header">
+                           <button class="accordion-button collapsed custom-button fs-4 {% if list.done %}text-decoration-line-through{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ list.id }}" aria-expanded="false" aria-controls="collapse{{ list.id }}" id="list_title{{ list.id }}">
+                           {{ list.text }}
+                           </button>
+                        </h2>
+                        <div id="collapse{{ list.id }}" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                           <div class="accordion-body">
+                              <table class="table-dark table-borderless" id="thingstable{{ list.id }}">
+                                 <tbody>
+                                    {% set things = ThingsToDo.query.filter_by(list_id=list.id).all() %}
+                                    {% for thing in things %}
+                                    <tr class="table-dark" id="thingstodoRow{{ thing.id }}">
+                                       <td>
+                                          <button type="button" class="btn btn-outline-light btn-sm" onclick="deleteThing('{{ thing.id }}')">
+                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"></path>
+                                                <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"></path>
+                                             </svg>
+                                          </button>
+                                       </td>
+                                       <td>
+                                          <form method="post" action="{{ url_for('user_page.change_thing_status', thing_id = thing.id) }}">
+                                             <input type="hidden" name="thing_status" value="{% if thing.done %}done{% else %}undone{% endif %}">
+                                             <input class="form-check-input light" type="checkbox" id="myCheck{{ list.id }}_{{ loop.index0 }}" value="" aria-label="..." onclick="crossItem('thing_title{{ list.id }}_{{ loop.index0 }}', 'myCheck{{ list.id }}_{{ loop.index0 }}')" {% if thing.done %} checked {% endif %}>
+                                             <button type="submit" style="display: none;"></button>
+                                          </form>
+                                       </td>
+                                       <td>
+                                          <label class="form-check-label {% if thing.done %}text-decoration-line-through{% endif %}" for="myCheck{{ list.id }}_{{ loop.index0 }}" id="thing_title{{ list.id }}_{{ loop.index0 }}">{{ thing.text }}</label>
+                                       </td>
+                                    </tr>
+                                    {% endfor %}
+                                 </tbody>
+                              </table>
+                              <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal{{ list.id }}">Add</button>
                            </div>
                         </div>
                      </div>
@@ -131,13 +133,13 @@
             {{ thing_to_do.hidden_tag() }}
             <div class="modal-body">
                <div class="mb-3">
-                  <label for="exampleTitle2{{list.id}}" class="form-label"></label>
-                  <input type="text" class="form-control" id="exampleTitle2{{list.id}}" name="text">
+                  <label for="exampleTitle2{{ list.id }}" class="form-label"></label>
+                  <input type="text" class="form-control" id="exampleTitle2{{ list.id }}" name="text">
                </div>
             </div>
             <div class="modal-footer">
                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-               <button type="button" class="btn btn-light" onclick="addThing(document.getElementById('exampleTitle2{{list.id}}').value, '{{ list.id }}')">Add</button>
+               <button type="button" class="btn btn-light" onclick="addThing(document.getElementById('exampleTitle2{{ list.id }}').value, '{{ list.id }}')">Add</button>
             </div>
          </form>
       </div>
@@ -146,11 +148,5 @@
 {% endfor %}
 <!-- Container for modals -->
 <div id="modalParent"></div>
-
-
-
-
 <script src="{{ url_for('user_page.static', filename='js/user_page_functions.js') }}"></script>
-
 {% endblock %}
-

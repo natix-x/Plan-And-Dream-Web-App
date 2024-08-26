@@ -3,7 +3,7 @@ from app.blueprints.user_page import user_page
 from app.blueprints.user_page.form import ListItem
 from database.models.lists import Lists
 from database.models.todo import ThingsToDo
-from flask import render_template, request, abort, jsonify
+from flask import render_template, request, jsonify
 from flask_login import login_required, current_user
 
 
@@ -13,11 +13,8 @@ def user_page_view(username):
     """
     if user is logged gives him possibility to add new list titles and things to particular lists
     :param username: entered nickname after /user_page/
-    :return: user_page (unique for every user) or HTTP 403 if user is not currently logged in
+    :return: user_page (unique for every user)
     """
-    if username != current_user.username:
-        abort(403)  # HTTP 403
-
     list_title = ListItem()  # create ListTitle object named 'list title'
     thing_to_do = ListItem()  # create ListItem object named 'thing_to_do'
 
@@ -35,34 +32,50 @@ def user_page_view(username):
 
 
 @login_required
+@user_page.route("/change_thing_status/<int:thing_id>/", methods=["POST"])
+def change_thing_status(thing_id):
+    """
+    changes the status of 'done' column in 'thingstodo' table in database:
+        - done equal to True if list item crossed out on website and according checkbox is checked;
+        - done equal to False if list item not crossed out on website and according checkbox is not checked
+    :param thing_id: primary key of item in 'thingstodo' table
+    :return: JSON-formatted data with status of the thingtodo
+    """
+
+    thing_item = ThingsToDo.query.get(thing_id)
+    thing_status = request.form.get("thing_status")
+
+    if thing_status == "done":
+        thing_item.done = True
+    elif thing_status == "undone":
+        thing_item.done = False
+
+    db.session.commit()
+    return jsonify({"thing_item_status": thing_item.done}), 200
+
+
+@login_required
 @user_page.route("/change_list_status/<int:list_id>/", methods=["POST"])
-@user_page.route("/change_list_status/<int:thing_id>/", methods=["POST"])
-def change_list_status(list_id=None, thing_id=None):
-    """
-    changes the status of 'done' column connected to provided list_id while changing 'lists' table
-    or thing_id while changing 'things_todo' table:
-    done equal to True if list item crossed out on website and according checkbox is checked;
-    done equal to False if list item not crossed out on website and according checkbox is not checked
+def change_list_status(list_id):
+    f"""
+    changes the status of 'done' column in 'lists' table:
+        - done equal to True if list item crossed out on website and according checkbox is checked;
+        - done equal to False if list item not crossed out on website and according checkbox is not checked,
+    also changes the status of 'done' column of associated tasks in 'thingstodo' table
     :param list_id: primary key of item in 'lists' table
-    :param thing_id: primary key of item in 'things_todo'
-    :return: updated database with changed 'done' column
+    :return: JSON-formatted data with status of the list 
     """
-    list_item = None
-
-    if list_id is not None:
-        list_item = Lists.query.get(list_id)
-    elif thing_id is not None:
-        list_item = ThingsToDo.query.get(thing_id)
-    else:
-        print("Invalid input")  # if both arguments None
-
+    list_item = Lists.query.get(list_id)
     list_status = request.form.get("list_status")
-    # get list_status from form in user_page.html: done if checkbox according to list item checked, else: undone
 
     if list_status == "done":
-        list_item.done = True  # set done equal to True
+        list_item.done = True
+        for thing in list_item.things_on_the_list:
+            thing.done = True
     elif list_status == "undone":
-        list_item.done = False  # set done equal to False
+        list_item.done = False
+        for thing in list_item.things_on_the_list:
+            thing.done = False
 
-    db.session.commit()  # commit changes
+    db.session.commit()
     return jsonify({"list_item_status": list_item.done}), 200
