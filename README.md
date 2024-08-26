@@ -37,4 +37,5 @@ This project focuses mainly on developing skills connected with Flask and JavaSc
 * making project structure more complex and readable
 * ability for users to delete tasks and lists
 * ability for users to cross out done tasks/lists
+* ability for users to delete theirs account
 

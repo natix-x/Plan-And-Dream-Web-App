@@ -1,6 +1,7 @@
 from app import db
 from app.blueprints.db_models.users import users
 from database.models.users import Users
+from flask import jsonify
 from flask_login import login_required
 
 
@@ -26,10 +27,16 @@ def add_user(username, email_address, password):
 
 @login_required
 @users.route("/delete_user/<int:user_id>/", methods=["POST"])
-def delete_user():
+def delete_user(user_id):
     """
-    deletes all things to do associated with a list from 'thingstodo' table in db
-    :param user_id: Primary key of list for which things to do will be deleted
-    :return: JSON response indicating success or failure
+    deletes user from 'users' table in db
+    :param user_id: primary key of user that is selected to be deleted
+    :return JSON response indicating success or failure
     """
-    pass
+    user_to_delted = Users.query.filter_by(id=user_id)
+    if user_to_delted:
+        user_to_delted.delete()
+        db.session.commit()
+        return jsonify({"message": "User deleted successfully"}), 200
+    else:
+        return jsonify({"message": "User not found"}), 404
