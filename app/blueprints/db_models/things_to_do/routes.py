@@ -5,8 +5,8 @@ from flask_login import login_required
 from database.models.todo import ThingsToDo, thing_to_do_schema, things_to_do_schema
 
 
-@login_required
 @things_to_do.route("/add_thing_to_do/<int:list_id>/", methods=["POST"])
+@login_required
 def add_thing_to_do(list_id):
     """
     adds new thing to 'thingstodo' table in db
@@ -25,8 +25,8 @@ def add_thing_to_do(list_id):
     return jsonify({"success": False}), 404
 
 
-@login_required
 @things_to_do.route("/delete_things_to_do/<int:list_id>/", methods=["POST"])
+@login_required
 def delete_things_to_do(list_id):
     """
     deletes all things to do associated with a list from 'thingstodo' table in db
@@ -43,13 +43,13 @@ def delete_things_to_do(list_id):
         return jsonify({"message": "Things not found"}), 404
 
 
-@login_required
 @things_to_do.route("/delete_thing_to_do/<int:thing_id>/", methods=["POST"])
+@login_required
 def delete_thing_to_do(thing_id):
     """
     deletes chosen thing to do from a chosen list
     :param thing_id: primary key of thing to do that is selected to be deleted
-    :return: JSON response indicating success
+    :return: JSON response indicating success or failure
     """
     thing_to_deleted = ThingsToDo.query.filter_by(id=thing_id)
     if thing_to_deleted:

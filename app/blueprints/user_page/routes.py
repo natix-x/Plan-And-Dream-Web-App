@@ -3,18 +3,21 @@ from app.blueprints.user_page import user_page
 from app.blueprints.user_page.form import ListItem
 from database.models.lists import Lists
 from database.models.todo import ThingsToDo
-from flask import render_template, request, jsonify
-from flask_login import login_required, current_user
+from flask import render_template, request, jsonify, redirect, url_for, abort
+from flask_login import login_required, current_user, login_manager, AnonymousUserMixin
 
 
-@login_required
 @user_page.route("/user_page/<username>/", methods=["GET", "POST"])
+@login_required
 def user_page_view(username):
     """
     if user is logged gives him possibility to add new list titles and things to particular lists
     :param username: entered nickname after /user_page/
     :return: user_page (unique for every user)
     """
+    if username != current_user.username:
+        return abort(401, description="You have to log in.")
+
     list_title = ListItem()  # create ListTitle object named 'list title'
     thing_to_do = ListItem()  # create ListItem object named 'thing_to_do'
 
@@ -31,8 +34,8 @@ def user_page_view(username):
     )
 
 
-@login_required
 @user_page.route("/change_thing_status/<int:thing_id>/", methods=["POST"])
+@login_required
 def change_thing_status(thing_id):
     """
     changes the status of 'done' column in 'thingstodo' table in database:
@@ -54,10 +57,10 @@ def change_thing_status(thing_id):
     return jsonify({"thing_item_status": thing_item.done}), 200
 
 
-@login_required
 @user_page.route("/change_list_status/<int:list_id>/", methods=["POST"])
+@login_required
 def change_list_status(list_id):
-    f"""
+    """
     changes the status of 'done' column in 'lists' table:
         - done equal to True if list item crossed out on website and according checkbox is checked;
         - done equal to False if list item not crossed out on website and according checkbox is not checked,

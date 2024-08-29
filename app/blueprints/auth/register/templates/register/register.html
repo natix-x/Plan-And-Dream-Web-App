@@ -8,7 +8,7 @@
          <div class="col">
             <label class="form-label" for="exampleInputUsername1">{{ form.username.label }}</label>
             <input class="form-control {% if form.username.errors %} is-invalid {% endif %}" id="exampleInputUsername1"
-               name="{{ form.username.name }}" type="text" value="{{ form.username.data }}">
+               name="{{ form.username.name }}" type="text">
             {% for error in form.username.errors %}
             <div class="invalid-feedback">
                {{ error }}
@@ -20,8 +20,7 @@
          <div class="col">
             <label class="form-label" for="exampleInputEmail1">{{ form.email_address.label }}</label>
             <input class="form-control {% if form.email_address.errors %} is-invalid {% endif %}" id="exampleInputEmail1"
-               name="{{ form.email_address.name }}" type="email"
-               value="{{ form.email_address.data }}">
+               name="{{ form.email_address.name }}" type="email">
             {% for error in form.email_address.errors %}
             <div class="invalid-feedback">
                {{ error }}

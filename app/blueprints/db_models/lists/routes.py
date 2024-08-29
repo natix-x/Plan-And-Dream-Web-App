@@ -5,8 +5,8 @@ from flask import jsonify, request
 from flask_login import login_required, current_user
 
 
-@login_required
 @lists.route("/add_list/", methods=["POST"])
+@login_required
 def add_list():
     """
     adds new list to 'lists' table in db
@@ -24,8 +24,8 @@ def add_list():
     return jsonify({"success": False}), 404
 
 
-@login_required
 @lists.route("/delete_list/<int:list_id>/", methods=["POST"])
+@login_required
 def delete_list(list_id):
     """
     deletes list from 'lists' table in db
