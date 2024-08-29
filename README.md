@@ -7,12 +7,14 @@
 * [Requirements](#requirements)
 * [Used technologies](#used-technologies)
 * [Setup](#setup)
+* [App starting](#app-starting)
 * [Status](#status)
 
 ### General info
 The aim of this project is to create a web application using Flask that allows users to create their own "to-do lists".
 This project focuses mainly on developing skills connected with Flask and JavaScript as well as good practices while creating project structure.
 ### Usage
+
 ### Requirements
 * requirements.txt contains a list of packages or libraries needed to work on this project.
 ### Used technologies
@@ -21,6 +23,23 @@ This project focuses mainly on developing skills connected with Flask and JavaSc
 * front-end framework: Boostrap v5.3
 ### Project structure
 ### Setup
+1. First, clone this repository.
+   ```sh
+   git clone https://github.com/natix-x/Plan-And-Dream-Web-App.git
+   ```
+2. Then, activate the environment.
+    ```sh
+   VenvSetUp.bat
+   ```
+### App starting
+1. Run application.
+   ```sh
+   RunApp
+   ```
+2. To see application access below url in your browser.
+   ```
+   http://127.0.0.1:5000
+   ```
 ### Status
 * creation of virtual environment 
 * defining the initial project structure
