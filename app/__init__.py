@@ -13,7 +13,7 @@ login_manager = LoginManager(app)
 db.init_app(app)  # connect database and app
 ma.init_app(app)  # connect marshmallow and app
 
-# from app.cli.db_config import db_create, db_drop
+from app.cli import db_drop, db_create, db_seed_users, db_seed_lists, db_seed_things_to_do
 
 # blueprints imports and registration
 
@@ -33,3 +33,6 @@ app.register_blueprint(user_page)
 app.register_blueprint(lists)
 app.register_blueprint(things_to_do)
 app.register_blueprint(users)
+
+with app.app_context():
+    db.create_all()  # create all tables in db
