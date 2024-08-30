@@ -1,4 +1,5 @@
 from app import app
+from configuration import Config
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host=Config.HOST, port=Config.PORT)

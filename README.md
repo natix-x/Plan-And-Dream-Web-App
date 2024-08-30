@@ -1,8 +1,11 @@
 # Plan&Dream Web App
+<div style="text-align: center;">
+    <img src="media/home_page.png" alt="drawing"/>
+</div>
 
 ## Table of contents: 
 * [General info](#general-info)
-* [Usage](#usage)
+* [User functionalities](#user-functionalities)
 * [Project structure](#project-structure)
 * [Requirements](#requirements)
 * [Used technologies](#used-technologies)
@@ -13,8 +16,24 @@
 ### General info
 The aim of this project is to create a web application using Flask that allows users to create their own "to-do lists".
 This project focuses mainly on developing skills connected with Flask and JavaScript as well as good practices while creating project structure.
-### Usage
+### User functionalities
+* Registration.
 
+<video width="320" height="240" controls>
+  <source src="media/registration.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+* Logging in and out.
+
+<video width="320" height="240" controls>
+  <source src="media/logout_login.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+* Creating lists and tasks inside them.
+* Crossing out done lists/tasks.
+* Deleting list/task.
 ### Requirements
 * requirements.txt contains a list of packages or libraries needed to work on this project.
 ### Used technologies
@@ -22,6 +41,27 @@ This project focuses mainly on developing skills connected with Flask and JavaSc
 * front-end: JavaScript, CSS, HTML
 * front-end framework: Boostrap v5.3
 ### Project structure
+```
+├── app/
+│   ├── blueprints/ - All blueprints for the app.
+│   │   ├── auth/
+│   │   │   ├── login/
+│   │   │   ├── register/
+│   │   ├── db_models/ - Blueprints for adding and deleting items for each table in database.
+│   │   │   ├── lists/
+│   │   │   ├── things_to_do/
+│   │   │   └── users/
+│   │   ├── home/
+│   │   └── user_page/
+│   ├── cli/ - Cli commands connected with database config and seeding.
+│   ├── static/ - Base static files. 
+│   └── templates/ - Base template.
+├── database/ - SQL Alchemy database, models and schemas
+├── configuration.py - All app configuration.
+├── requirements.txt - Development dependencies.
+├── RunApp.bat - Batch script for app running.
+└── VenvSetUp.bat - Batch script for venv setup.
+```
 ### Setup
 1. First, clone this repository.
    ```sh
