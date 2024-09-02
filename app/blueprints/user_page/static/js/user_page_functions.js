@@ -180,7 +180,6 @@ function addList(text) {
 function addThing(text, list_id) {
     const formData = new FormData();
     formData.append('text', text);
-
     let url = `/add_thing_to_do/${list_id}`;
     console.log(url);
     console.log(text);
@@ -277,3 +276,30 @@ function deleteThing(thingId) {
             tableRow.innerHTML = "";
         });
 }
+
+// While pressed "Enter" key when adding the list, the list is added as it would be if "buttonAddList" was clicked
+let newListTitle = document.getElementById("exampleTitle1");
+newListTitle.addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        document.getElementById("buttonAddList").click();
+    }
+});
+
+// While pressed "Enter" key when adding the task, the task is added as it would be if "buttonAddThing" was clicked
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.modal .form-control').forEach(function(input) {
+        input.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                // Get the parent modal
+                var modal = input.closest('.modal');
+                // Find the 'Add' button within that modal
+                var addButton = modal.querySelector('button[id="buttonAddThing"]');
+                if (addButton) {
+                    addButton.click();
+                }
+            }
+        });
+    });
+});

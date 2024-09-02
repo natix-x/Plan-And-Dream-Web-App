@@ -114,7 +114,7 @@
             </div>
             <div class="modal-footer">
                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-               <button type="button" class="btn btn-light" onclick="addList(document.getElementById('exampleTitle1').value)">Add</button>
+               <button type="button" class="btn btn-light" id="buttonAddList" onclick="addList(document.getElementById('exampleTitle1').value)">Add</button>
             </div>
          </form>
       </div>
@@ -139,7 +139,7 @@
             </div>
             <div class="modal-footer">
                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-               <button type="button" class="btn btn-light" onclick="addThing(document.getElementById('exampleTitle2{{ list.id }}').value, '{{ list.id }}')">Add</button>
+               <button type="button" class="btn btn-light" id="buttonAddThing" onclick="addThing(document.getElementById('exampleTitle2{{ list.id }}').value, '{{ list.id }}')">Add</button>
             </div>
          </form>
       </div>
