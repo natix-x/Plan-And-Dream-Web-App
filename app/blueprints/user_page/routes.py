@@ -69,6 +69,10 @@ def change_list_status(list_id):
     :return: JSON-formatted data with status of the list 
     """
     list_item = Lists.query.get(list_id)
+
+    if not list_item:
+        return jsonify({"error": "List item not found"}), 404
+
     list_status = request.form.get("list_status")
 
     if list_status == "done":

@@ -7,24 +7,32 @@ function crossItem(textId, checkboxId) {
     let text = document.getElementById(textId);
     let checkbox = document.getElementById(checkboxId);
     let form = checkbox.closest('form');
+
     if (form) {
         let hiddenInput = form.querySelector('input[name="list_status"]') || form.querySelector('input[name="thing_status"]');
-        hiddenInput.value = checkbox.checked ? "done" : "undone";
-        if (checkbox.checked) {
-            text.style.textDecoration = "line-through";
-        } else {
-            text.style.textDecoration = "none";
+
+        if (hiddenInput) {
+            hiddenInput.value = checkbox.checked ? "done" : "undone";
         }
+
+        // Update text decoration immediately
+        updateTextDecoration(text, checkbox.checked);
+
+
+        let formData = new FormData(form);
 
         fetch(form.action, {
                 method: 'POST',
-                body: new FormData(form)
+                body: formData
             })
             .then(response => response.json())
             .then(data => {
                 console.log(data);
 
-                // If it's a list and marked as done, cross out all associated tasks
+                // Ensure the text decoration reflects the updated status
+                updateTextDecoration(text, checkbox.checked);
+
+                // If it's a list and marked as done/undone, update all associated tasks
                 if (textId.startsWith('list_title')) {
                     let listId = textId.replace('list_title', '');
                     let thingsTable = document.getElementById(`thingstable${listId}`);
@@ -35,7 +43,7 @@ function crossItem(textId, checkboxId) {
 
                         checkboxes.forEach((cb, index) => {
                             cb.checked = checkbox.checked;
-                            labels[index].style.textDecoration = checkbox.checked ? "line-through" : "none";
+                            updateTextDecoration(labels[index], checkbox.checked);
                         });
                     }
                 }
@@ -45,6 +53,21 @@ function crossItem(textId, checkboxId) {
             });
     } else {
         console.error("No form found");
+    }
+}
+
+/**
+ * Updates text decoration based on the checkbox state
+ * @param {HTMLElement} text Element whose decoration is to be updated
+ * @param {boolean} isChecked Whether the checkbox is checked
+ */
+function updateTextDecoration(text, isChecked) {
+    if (text) {
+        if (isChecked) {
+            text.classList.add('text-decoration-line-through');
+        } else {
+            text.classList.remove('text-decoration-line-through');
+        }
     }
 }
 
@@ -128,12 +151,12 @@ function addList(text) {
                              <div class="modal-body">
                                 <div class="mb-3">
                                    <label for="exampleTitle2" class="form-label"></label>
-                                   <input type="text" class="form-control" id="exampleTitle2" name="text">
+                                   <input type="text" class="form-control" id="exampleTitle2${ new_item.id }" name="text">
                                 </div>
                              </div>
                              <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-light" onclick="addThing(document.getElementById('exampleTitle2').value, ${new_item.id})">Add</button>
+                                <button type="button" class="btn btn-light" onclick="addThing(document.getElementById('exampleTitle2${ new_item.id }').value, ${new_item.id})">Add</button>
                              </div>
                           </form>
                        </div>
@@ -152,15 +175,15 @@ function addList(text) {
 /**
  * Adds task to 'thingstodo' table by fetching from add_thing_to_do url and displays it on user's unique page.
  * @param {string} text Task name
- * @param {number} list_id Id of the list that particular task belongs to
+ * @param {string} list_id Id of the list that particular task belongs to
  */
 function addThing(text, list_id) {
     const formData = new FormData();
     formData.append('text', text);
 
     let url = `/add_thing_to_do/${list_id}`;
-    console.log(url)
-    console.log(text)
+    console.log(url);
+    console.log(text);
     fetch(url, {
             method: "POST",
             body: formData
@@ -172,32 +195,34 @@ function addThing(text, list_id) {
                 let new_item = data["new_item"];
                 let table = document.getElementById(`thingstable${new_item.list_id}`);
                 let newRow = document.createElement("tr");
-                newRow.setAttribute("id", `thingstodoRow${new_item.id}`)
-                newRow.innerHTML = ` <td>
-                      <button type="button" class="btn btn-outline-light btn-sm" onclick="deleteThing(${new_item.id})">
-                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
-   <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"></path>
-   <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"></path>
-   </svg>
-               </button>
-                   </td>
-   <td>
-                                     <form method="post" action="/change_thing_status/${new_item.id}">
-                                         <input type="hidden" name="list_status" value="${new_item.done ? 'done' : 'undone'}">
-                                         <input class="form-check-input light" type="checkbox" id="myCheck${new_item.id}" value="" aria-label="..." onClick="crossItem('thing_title${new_item.list_id}_${new_item.id}', 'myCheck${new_item.id}')" ${new_item.done ? 'checked' : ''}>
-                                         <button type="submit" style="display: none;"></button>
-                                     </form>
-                                 </td>
-                                 <td>
-                                     <label class="form-check-label ${new_item.done ? 'text-decoration-line-through' : ''}" for="myCheck${new_item.id}" id="thing_title${new_item.list_id}_${new_item.id}">${new_item.text}</label>
-                                 </td>`;
+                newRow.setAttribute("id", `thingstodoRow${new_item.id}`);
+                newRow.innerHTML = `
+                    <td>
+                        <button type="button" class="btn btn-outline-light btn-sm" onclick="deleteThing('${new_item.id}')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"></path>
+                                <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"></path>
+                            </svg>
+                        </button>
+                    </td>
+                    <td>
+                        <form method="post" action="/change_thing_status/${new_item.id}">
+                            <input type="hidden" name="thing_status" value="${new_item.done ? 'done' : 'undone'}">
+                            <input class="form-check-input light" type="checkbox" id="myCheck${new_item.id}" value="" aria-label="..." onclick="crossItem('thing_title${new_item.list_id}_${new_item.id}', 'myCheck${new_item.id}')" ${new_item.done ? 'checked' : ''}>
+                            <button type="submit" style="display: none;"></button>
+                        </form>
+                    </td>
+                    <td>
+                        <label class="form-check-label ${new_item.done ? 'text-decoration-line-through' : ''}" for="myCheck${new_item.id}" id="thing_title${new_item.list_id}_${new_item.id}">${new_item.text}</label>
+                    </td>
+                `;
+
                 table.appendChild(newRow);
 
-
-
-                const myModalEl2 = document.getElementById('exampleModal' + new_item.list_id)
-                const modal2 = bootstrap.Modal.getInstance(myModalEl2);
-                modal2.hide();
+                // Close the modal after adding the new thing
+                const myModalEl = document.getElementById(`exampleModal${list_id}`);
+                const modal = bootstrap.Modal.getInstance(myModalEl);
+                modal.hide();
             } else {
                 console.error("Adding new item failed.");
             }
@@ -205,9 +230,10 @@ function addThing(text, list_id) {
         .catch(error => console.error(error));
 }
 
+
 /**
  * Deletes all tasks associated with particular list by fetching from delete_things_to_do url and deletes list from 'lists' by fetching from delete_list url.
- * @param {number} listId Id of the list to be deleted
+ * @param {string} listId Id of the list to be deleted
  */
 function deleteList(listId) {
     fetch(`/delete_things_to_do/${listId}`, {
@@ -237,7 +263,7 @@ function deleteList(listId) {
 
 /**
  * Deletes task by fetching from delete_things_to_do url.
- * @param {number} thingId Id of the task to be deleted
+ * @param {string} thingId Id of the task to be deleted
  */
 function deleteThing(thingId) {
     fetch(`/delete_thing_to_do/${thingId}`, {
@@ -245,7 +271,7 @@ function deleteThing(thingId) {
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error("Failed to delete things to do associated with the list.");
+                throw new Error("Failed to delete selected task");
             }
             let tableRow = document.getElementById("thingstodoRow" + thingId);
             tableRow.innerHTML = "";
