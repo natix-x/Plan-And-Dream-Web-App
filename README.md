@@ -20,34 +20,25 @@ After starting the application, you can interact with it through the web interfa
 - **Manage To-Do Lists**: Add, delete lists and tasks in your lists.
 - **Crossing Out Tasks**: Mark tasks as completed by crossing them out.
 ### App functionalities
-Click the picture to see the video.
 <table>
   <tr>
     <td>
-      <p><strong>Registration:</strong> Registration process.</p>
-      <a href="media/registration.mp4">
-        <img src="media/registration_page_screenshot.jpg" alt="Registration" width="180"/>
-      </a>
+      <p>Registration.</p>
+        <img src="media/registration.gif" alt="Registration" width="180"/>
     </td>
     <td>
-      <p><strong>Login:</strong> Login process and error handling.</p>
-      <a href="media/logout_login.mp4">
-        <img src="media/login_page_screenshot.jpg" alt="Login" width="180" />
-      </a>
+      <p> Logout and login, error handling, user deletion.</p>
+        <img src="media/login_logout_delete_user.gif" alt="Login" width="180" />
     </td>
   </tr>
   <tr>
     <td>
-      <p><strong>Add:</strong> Adding and deleting process.</p>
-      <a href="media/delete_add.mp4">
-        <img src="media/delete_add_screenshot.jpg" alt="Add" width="180" />
-      </a>
+      <p>Adding and deleting lists/tasks.</p>
+        <img src="media/add_delete_list_task.gif" alt="Add" width="180" />
     </td>
     <td>
-      <p><strong>Cross:</strong> Crossing out process.</p>
-      <a href="media/crossing_out.mp4">
-        <img src="media/crossing_out_screenshot.jpg" alt="Cross" width="180" />
-      </a>
+      <p>Crossing out lists/tasks.</p>
+        <img src="media/cross_out_list_task.gif" alt="Cross" width="180" />
     </td>
   </tr>
 </table>
@@ -63,6 +54,8 @@ All recordings are recordings from a mobile browser as the web app runs also on 
   * CSS for styling and layout.
   * HTML for content structure.
 * Front-End Framework: Bootstrap v5.3 for responsive design and UI components
+* Code formatting: Beautifier and Black
+* Manual testing: Postman
 ### Project structure
 ```
 ├── app/
@@ -103,5 +96,5 @@ All recordings are recordings from a mobile browser as the web app runs also on 
    ```
    http://127.0.0.1:5000
    ```
-   If you want to change host or port [click here](configuration.py).
+   If you want other host or port change then in configuration.py
 
